@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { getTimeZones } from '@vvo/tzdb';
 import { format, parse } from 'date-fns';
@@ -21,7 +21,9 @@ export default function App() {
   const [sourceTime, setSourceTime] = useState(format(new Date(), 'h:mm a'));
 
   const [destinationTimeZone, setDestinationTimeZone] = useState();
-  const [destinationTime, setDestinationTime] = useState('5:30 PM');
+  const [destinationTime, setDestinationTime] = useState('');
+
+  useEffect(doTimeConversion, [sourceTimeZone, sourceTime, destinationTimeZone]);
 
   function updateSourceTime(event) {
     setSourceTime(event.target.value);
@@ -33,10 +35,19 @@ export default function App() {
 
   function updateDestinationTimeZone(value) {
     setDestinationTimeZone(value);
+  }
 
-    const sourceTimeObj = parse(`${sourceTime}`, 'h:mm a', new Date());
-    const utcTime = zonedTimeToUtc(sourceTimeObj, sourceTimeZone.value.name);
-    setDestinationTime(format(utcToZonedTime(utcTime, value.label), 'h:mm a'), { timeZone: value.name });
+  function doTimeConversion() {
+    if (sourceTimeZone && sourceTime && destinationTimeZone) {
+      const sourceTimeObj = parse(`${sourceTime}`, 'h:mm a', new Date());
+      
+      if (isNaN(sourceTimeObj.getTime())) {
+        setDestinationTime('');
+      } else {
+        const utcTime = zonedTimeToUtc(sourceTimeObj, sourceTimeZone.value.name);
+        setDestinationTime(format(utcToZonedTime(utcTime, destinationTimeZone.label), 'h:mm a'), { timeZone: destinationTimeZone.label });
+      }
+    }
   }
 
   return (
@@ -56,7 +67,7 @@ export default function App() {
           </div>
         </section>
         
-        <section>
+        <section className="mt-4">
           <h2 className="text-xl font-bold">Destination Time</h2>
           <div className="flex flex-col">
             <label>Time zone</label>
