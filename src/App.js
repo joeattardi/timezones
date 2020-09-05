@@ -53,8 +53,8 @@ export default function App() {
   return (
     <div>
       <Header />
-      <main className="p-2">
-        <section>
+      <main className="p-2 flex flex-col sm:flex-row">
+        <section className="flex-grow">
           <h2 className="text-xl font-bold">Source Time</h2>
           <div className="flex flex-col">
             <label>Time zone</label>
@@ -67,7 +67,7 @@ export default function App() {
           </div>
         </section>
         
-        <section className="mt-4">
+        <section className="mt-4 sm:mt-0 sm:ml-4 flex-grow">
           <h2 className="text-xl font-bold">Destination Time</h2>
           <div className="flex flex-col">
             <label>Time zone</label>
