@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { rawTimeZones } from '@vvo/tzdb';
+import { getTimeZones } from '@vvo/tzdb';
+import { format, parse } from 'date-fns';
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz';
 
 import Select from 'react-select';
@@ -8,17 +9,19 @@ import Select from 'react-select';
 import Header from './Header';
 import Input from './Input';
 
-const timeZones = rawTimeZones.sort((a, b) => a.name.localeCompare(b.name));
-const tzOptions = timeZones.map(zone => ({ value: zone.name, label: zone.name }));
+const timeZones = getTimeZones().sort((a, b) => a.name.localeCompare(b.name));
+const tzOptions = timeZones.map(zone => ({ value: zone, label: zone.name }));
 
-const currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-const currentTimeZoneValue = { value: currentTimeZone, label: currentTimeZone };
+const currentTimeZoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const currentTimeZone = timeZones.find(zone => zone.name === currentTimeZoneName);
+const currentTimeZoneValue = { value: currentTimeZone, label: currentTimeZone.name };
 
 export default function App() {
   const [sourceTimeZone, setSourceTimeZone] = useState(currentTimeZoneValue);
-  const [sourceTime, setSourceTime] = useState('5:00 PM');
+  const [sourceTime, setSourceTime] = useState(format(new Date(), 'h:mm a'));
 
   const [destinationTimeZone, setDestinationTimeZone] = useState();
+  const [destinationTime, setDestinationTime] = useState('5:30 PM');
 
   function updateSourceTime(event) {
     setSourceTime(event.target.value);
@@ -30,6 +33,10 @@ export default function App() {
 
   function updateDestinationTimeZone(value) {
     setDestinationTimeZone(value);
+
+    const sourceTimeObj = parse(`${sourceTime}`, 'h:mm a', new Date());
+    const utcTime = zonedTimeToUtc(sourceTimeObj, sourceTimeZone.value.name);
+    setDestinationTime(format(utcToZonedTime(utcTime, value.label), 'h:mm a'), { timeZone: value.name });
   }
 
   return (
@@ -58,7 +65,7 @@ export default function App() {
 
           <div className="flex flex-col">
             <label>Time</label>
-            <div className="font-bold text-2xl">5:30 PM</div>
+            <div className="font-bold text-2xl">{destinationTime}</div>
           </div>
         </section>
       </main>
