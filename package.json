@@ -12,7 +12,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
-    "react-select": "^3.1.0"
+    "react-select": "^3.1.0",
+    "react-time-picker": "^4.0.1"
   },
   "scripts": {
     "build:css": "postcss src/tailwind.css -o src/index.css",

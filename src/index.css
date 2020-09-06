@@ -18606,6 +18606,12 @@ video {
 
 @import url('https://css.gg/time.css');
 
+.react-time-picker__wrapper {
+  border-radius: 5px;
+  padding: 5px 8px;
+  border-color: hsl(0,0%,80%) !important;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
